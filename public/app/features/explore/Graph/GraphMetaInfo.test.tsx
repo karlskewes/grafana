@@ -4,7 +4,7 @@ import { toDataFrame, FieldType } from '@grafana/data';
 
 import { GraphMetaInfo } from './GraphMetaInfo';
 
-function graphFrame(refId: string, bytes?: number) {
+function graphFrame(refId: string, samples?: number) {
   return toDataFrame({
     refId,
     fields: [
@@ -12,22 +12,24 @@ function graphFrame(refId: string, bytes?: number) {
       { name: 'Value', type: FieldType.number, values: [1] },
     ],
     meta:
-      bytes === undefined ? undefined : { stats: [{ displayName: 'Bytes processed', unit: 'decbytes', value: bytes }] },
+      samples === undefined
+        ? undefined
+        : { stats: [{ displayName: 'Equivalent samples read', unit: 'short', value: samples }] },
   });
 }
 
 describe('GraphMetaInfo', () => {
-  it('renders the formatted bytes processed stat', () => {
-    render(<GraphMetaInfo data={[graphFrame('A', 11188007)]} />);
+  it('renders the formatted equivalent samples read stat', () => {
+    render(<GraphMetaInfo data={[graphFrame('A', 17647)]} />);
 
-    expect(screen.getByText('Bytes processed:')).toBeInTheDocument();
-    expect(screen.getByText('11.2 MB')).toBeInTheDocument();
+    expect(screen.getByText('Equivalent samples read:')).toBeInTheDocument();
+    expect(screen.getByText('17.6 K')).toBeInTheDocument();
   });
 
   it('sums the stat across queries, deduping by refId', () => {
-    render(<GraphMetaInfo data={[graphFrame('A', 1000000), graphFrame('A', 1000000), graphFrame('B', 1000000)]} />);
+    render(<GraphMetaInfo data={[graphFrame('A', 1000), graphFrame('A', 1000), graphFrame('B', 1000)]} />);
 
-    expect(screen.getByText('2 MB')).toBeInTheDocument();
+    expect(screen.getByText('2 K')).toBeInTheDocument();
   });
 
   it('renders nothing when no frame carries the stat', () => {

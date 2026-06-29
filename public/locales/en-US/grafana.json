@@ -10514,7 +10514,7 @@
       "title": "Graph"
     },
     "meta-info": {
-      "bytes-processed": "Bytes processed"
+      "equivalent-samples-read": "Equivalent samples read"
     }
   },
   "heatmap": {
